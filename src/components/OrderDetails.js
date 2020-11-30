@@ -1,13 +1,39 @@
-import React,{useState} from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity,Animated,Dimensions } from 'react-native';
+import React,{useState,useEffect} from 'react';
+import { View, Text, StyleSheet, Image,Animated,Dimensions,FlatList,TouchableOpacity } from 'react-native';
 import Header from '../sub_components/Header';
-export default function OrderDetails({navigation}) {
+import {connect} from 'react-redux';
+
+function OrderDetails({navigation,OrderReducer,userOrderData}) {
     const[tab1,setTab1]=useState(true);
     const[tab2,setTab2]=useState(false);
     const[tab3,setTab3]=useState(false);
     const[tab4,setTab4]=useState(false);
       const [translateValue] = useState(new Animated.Value(0));
+      const[orderStatus,setOrderStatus]=useState([])
+   useEffect(()=>{
+       setOrderStatus(OrderReducer.active_orders)
+   },[])
+
+      const renderItem = ({ item }) => {
+        // const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
     
+        return (
+            <TouchableOpacity onPress={()=>navigation.navigate('Order',{id:item.id,status:item.order_status,package:item.pakage,amount:item.amount})} style={styles.orderTile}>
+            <Image source={require('../constants/imgs/men.jpg')} style={styles.image} />
+
+            <View style={styles.textContainer}><Text style={styles.textInsideContainer} >{item.pakage}</Text>
+                <Text style={styles.lightTextinsideConatiner}>{item.id}</Text>
+                <Text style={[styles.lightTextinsideConatiner, { fontWeight: 'bold' }]}>{`$${item.amount}`}</Text></View>
+            <View style={styles.rightConatiner}><Text style={{ color: 'black', opacity: 0.3, fontSize: 12 }}>{item.created_at}</Text></View>
+
+            <View style={styles.triangle} />
+            <Image source={require('../constants/imgs/check-mark.png')} style={{ width: 13, height: 13, position: 'absolute', right: 5, top: 5 }} />
+
+
+
+        </TouchableOpacity>
+        );
+      };
     return (
         <View style={styles.container}>
             <View style={styles.subContainer}>
@@ -15,7 +41,7 @@ export default function OrderDetails({navigation}) {
                 <View style={styles.tabsContainer}>
                 
                     <TouchableOpacity onPress={()=>{                      
-                        setTab1(true);setTab2(false);setTab3(false);setTab4(false);
+                        setTab1(true);setTab2(false);setTab3(false);setTab4(false);setOrderStatus(OrderReducer.active_orders)
                         Animated.spring(translateValue, {
                             toValue: 0,
                             velocity: 10,
@@ -28,7 +54,7 @@ export default function OrderDetails({navigation}) {
                             toValue: 50,
                             velocity:10,
                             useNativeDriver: true,
-                          }).start();setTab1(false);setTab2(true);setTab3(false);setTab4(false)}}>
+                          }).start();setTab1(false);setTab2(true);setTab3(false);setTab4(false);setOrderStatus(OrderReducer.completed_orders)}}>
                         <Text style={styles.tabsText}>Completed</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>{
@@ -36,7 +62,7 @@ export default function OrderDetails({navigation}) {
                             toValue: 75,
                             velocity:10,
                             useNativeDriver: true,
-                          }).start();setTab1(false);setTab2(false);setTab3(true);setTab4(false)}}>
+                          }).start();setTab1(false);setTab2(false);setTab3(true);setTab4(false);setOrderStatus(OrderReducer.deliver_orders)}}>
                         <Text style={styles.tabsText}>Pending</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>{
@@ -45,7 +71,7 @@ export default function OrderDetails({navigation}) {
                             velocity:10,
                             useNativeDriver: true,
                           }).start();
-                        setTab1(false);setTab2(false);setTab3(true);setTab4(false)
+                        setTab1(false);setTab2(false);setTab3(true);setTab4(true);setOrderStatus(OrderReducer.cancelled_orders)
                            
                     }}>
                         <Text style={styles.tabsText}>Cancelled</Text>
@@ -96,22 +122,15 @@ export default function OrderDetails({navigation}) {
 
                 </View>
             </View>
+          
             <View style={styles.orderContainer}>
-                <View style={styles.orderTile}>
-                    <Image source={require('../constants/imgs/men.jpg')} style={styles.image} />
-
-                    <View style={styles.textContainer}><Text style={styles.textInsideContainer} >Chiken Tikka Biryani</Text>
-                        <Text style={styles.lightTextinsideConatiner}>Afghani Chiken Tikka</Text>
-                        <Text style={[styles.lightTextinsideConatiner, { fontWeight: 'bold' }]}>$360</Text></View>
-                    <View style={styles.rightConatiner}><Text style={{ color: 'black', opacity: 0.3, fontSize: 12 }}>07/10/2020</Text></View>
-
-                    <View style={styles.triangle} />
-                    <Image source={require('../constants/imgs/check-mark.png')} style={{ width: 13, height: 13, position: 'absolute', right: 5, top: 5 }} />
-
-
-
-                </View>
-                <View style={[styles.orderTile, { marginTop: 20 }]}>
+            <FlatList
+        data={orderStatus}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      
+      />
+                {/* <View style={[styles.orderTile, { marginTop: 10 }]}>
                     <Image source={require('../constants/imgs/men.jpg')} style={styles.image} />
 
                     <View style={styles.textContainer}><Text style={styles.textInsideContainer} >Chiken Tikka Biryani</Text>
@@ -124,7 +143,8 @@ export default function OrderDetails({navigation}) {
 
 
 
-                </View>
+                </View> */}
+  
 
 
             </View>
@@ -156,7 +176,7 @@ const styles = StyleSheet.create({
     orderContainer: {
         width: '100%',
         alignItems: 'center',
-        marginTop: 50,
+        marginTop: 10,
 
 
 
@@ -176,7 +196,8 @@ const styles = StyleSheet.create({
         shadowRadius: 2.62,
 
         elevation: 1,
-        borderRadius: 10
+        borderRadius: 10,
+        marginTop:10
     },
     image: {
         width: 50,
@@ -250,3 +271,13 @@ const styles = StyleSheet.create({
 
 
 })
+const mapStateToProps=(state)=>{
+    const tempReducer=state.orderReducer.orders;
+    console.log('data',state.orderReducer.orders)
+    return{
+        OrderReducer:tempReducer
+    }
+
+}
+
+export default connect (mapStateToProps,null)(OrderDetails)
