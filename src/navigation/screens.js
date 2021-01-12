@@ -25,7 +25,6 @@ import Notification from '../components/Notification';
 import MessageNotification from '../components/MessageNotification';
 import Help from '../components/Help';
 import Authentication from '../components/Authentication';
-import Delete from '../components/Delete';
 import ForgotPassword from '../components/ForgotPassword';
 import OTP from '../components/OTP';
 import PasswordChange from '../components/PasswordChange';
@@ -133,7 +132,7 @@ function registerSteps() {
       <Register.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
       <Register.Screen name="OTP" component={OTP} options={{ headerShown: false }} />
       <Register.Screen name="PasswordChange" component={PasswordChange} options={{ headerShown: false }} />
-      {/* <Register.Screen name="Delete" component={Delete} options={{ headerShown: false }}  /> */}
+
 
 
     </Register.Navigator>
@@ -182,6 +181,7 @@ export default function App(props) {
         <Stack.Navigator>
 
           <Stack.Screen name="DashBoard" component={dashBoard} options={{ headerShown: false }} />
+          <Stack.Screen name="RegisterSteps" component={registerSteps} options={{ headerShown: false }} />
 
 
         </Stack.Navigator>

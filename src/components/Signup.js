@@ -72,6 +72,7 @@ class SignupScreen extends React.Component {
 
   facebookLogin = async () => {
     this.initUser(callBack = (json) => {
+      console.log(json)
       this.props.signupUserApi(json.name, json.email, '12345678', this.props.navigation)
     });
 
@@ -85,6 +86,7 @@ class SignupScreen extends React.Component {
         } else {
           AccessToken.getCurrentAccessToken().then((data) => {
             const { accessToken } = data
+            console.log('acces token',data)
             fetch('https://graph.facebook.com/v2.5/me?fields=email,name,friends&access_token=' + accessToken)
               .then((response) => response.json())
               .then((json) => {
@@ -123,6 +125,7 @@ class SignupScreen extends React.Component {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
+      console.log(userInfo)
       const { user } = userInfo;
       this.props.signupUserApi(user.name, user.email, '12345678', this.props.navigation)
     } catch (error) {

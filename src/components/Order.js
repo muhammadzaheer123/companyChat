@@ -6,7 +6,7 @@ import Header from '../sub_components/Header';
 import {connect} from 'react-redux';
 
 
- function Order({navigation,userOrderData,route}) {
+ function Order({navigation,route}) {
      console.log(route)
     const [status,setStatus]=useState(false);
     const [cancelStatus,setCancelStatus]=useState(true);
@@ -39,10 +39,7 @@ import {connect} from 'react-redux';
                     </View>
 
                 </View>
-                {/* <View style={styles.tile}>
-                <Text style={styles.text}>Recent Order</Text></View> */}
-                {/* <View style={[styles.tile,{marginTop:20}]}>
-                <Text style={styles.text}>Order Status</Text></View> */}
+           
 
            
             <View style={{height:50,width:'100%',marginTop:20}}>

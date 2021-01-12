@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, LogBox } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, LogBox,StatusBar } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import Pusher from 'pusher-js/react-native';
+import { connect } from 'react-redux';
 
 LogBox.ignoreAllLogs();
 
@@ -14,12 +15,13 @@ var pusher = new Pusher('73ead456e66df0eb225b', {
 
 var channel = pusher.subscribe('channel2');
 
-export default function Example(props) {
+function ChatView(props) {
   const [messages, setMessages] = useState([]);
   const menu = useRef();
   const loaded = useRef(false);
 
   useEffect(() => {
+    console.log('....../////////', props.OrderReducer.token)
     channel.bind('message2', function (data) {
       // console.log(data);
       callme();
@@ -59,7 +61,7 @@ export default function Example(props) {
     // alert('ok')
     let tempArray = [];
     recieveMessages(function callBack(json) {
-      //  console.log(json.messages)
+        console.log(json)
 
       json.messages != undefined ? json.messages.map(item =>
         tempArray.push({ _id: item.id, createdAt: item.updated_at, text: item.message, user: { _id: item.from, name: item.from } })
@@ -75,7 +77,7 @@ export default function Example(props) {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'multipart/form-data',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImJlNGUyYjIzOTcxYTc3YzI3Mzg1ZjBlZjUxY2IxZjQ2ZDM3NjFhMTAzM2JiNmYxM2M4N2Q5M2QyMzU5OTJjNTRkYjFmYWE4ODRiYjI3M2ZiIn0.eyJhdWQiOiIzIiwianRpIjoiYmU0ZTJiMjM5NzFhNzdjMjczODVmMGVmNTFjYjFmNDZkMzc2MWExMDMzYmI2ZjEzYzg3ZDkzZDIzNTk5MmM1NGRiMWZhYTg4NGJiMjczZmIiLCJpYXQiOjE2MDYzMDI3MDAsIm5iZiI6MTYwNjMwMjcwMCwiZXhwIjoxNjM3ODM4NzAwLCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.ia0vUooZNMlLOeddYXncZsmQL9xnJl2sR_anivhbeZwKl-_MgUpWJ9vjOmHSi591NpSHfvNwE9CJM7dcI4lcroeLlVyZjKtT8m966iNVZlDrWIDdDxFZwrkCFUAXjPIkfCfZEkGU0BpA1Kt9eCMZZtmM7L89nVsjTerMKQAh0fuYbjZyteEJ-0z0qumue396RjTaYAQHgNMICvLtUxs28RIZjlp7IKu2InkdX3yW8yppQuP4GxwIhxtTfH4euGXuo1H86dzCGEH--VCn8KMCIPX5BqHG8nH105AuktmcltWLpOVbtTPBkk7_a83qSYULMtpcLeDiIt564zZ0RAb-5jzph3vSWeAQT9dM4mT3d0_Vmwq_NSMGCcNwUasFxQbnuZuBBs3jwWhsBO4-CBU2SFqdeirFtwttPkH9O2NVO4cj1MTbjjUN6bz0ap9Q6vq6_h6hdFMvlXTTspUvX6Fo5Hi61ZdI8jyQgWMHmMyk_RVssWOKxOfxxlC6tSF5YHMUt66c0fUlQSNMv4Uyitlu13Kx2-Tkfw2vlNiW304B6UROjF_vkLpFNzLemer2_xyrQ_PQVo9v-rMMBcmRMACnb9dQ2DlUfrhW9uPMHrS74GCHqTimscguWAOy0mTOsp2Zy1bM_ZVhfLQTJSVj3UhhYr7w9oilrGz6URknboSHcnU',
+        'Authorization': `Bearer ${props.OrderReducer.token}`,
       },
 
     }).then((response) => response.json()).then(json => callBack(json)).catch(e => alert(e))
@@ -93,7 +95,7 @@ export default function Example(props) {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'multipart/form-data',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImJlNGUyYjIzOTcxYTc3YzI3Mzg1ZjBlZjUxY2IxZjQ2ZDM3NjFhMTAzM2JiNmYxM2M4N2Q5M2QyMzU5OTJjNTRkYjFmYWE4ODRiYjI3M2ZiIn0.eyJhdWQiOiIzIiwianRpIjoiYmU0ZTJiMjM5NzFhNzdjMjczODVmMGVmNTFjYjFmNDZkMzc2MWExMDMzYmI2ZjEzYzg3ZDkzZDIzNTk5MmM1NGRiMWZhYTg4NGJiMjczZmIiLCJpYXQiOjE2MDYzMDI3MDAsIm5iZiI6MTYwNjMwMjcwMCwiZXhwIjoxNjM3ODM4NzAwLCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.ia0vUooZNMlLOeddYXncZsmQL9xnJl2sR_anivhbeZwKl-_MgUpWJ9vjOmHSi591NpSHfvNwE9CJM7dcI4lcroeLlVyZjKtT8m966iNVZlDrWIDdDxFZwrkCFUAXjPIkfCfZEkGU0BpA1Kt9eCMZZtmM7L89nVsjTerMKQAh0fuYbjZyteEJ-0z0qumue396RjTaYAQHgNMICvLtUxs28RIZjlp7IKu2InkdX3yW8yppQuP4GxwIhxtTfH4euGXuo1H86dzCGEH--VCn8KMCIPX5BqHG8nH105AuktmcltWLpOVbtTPBkk7_a83qSYULMtpcLeDiIt564zZ0RAb-5jzph3vSWeAQT9dM4mT3d0_Vmwq_NSMGCcNwUasFxQbnuZuBBs3jwWhsBO4-CBU2SFqdeirFtwttPkH9O2NVO4cj1MTbjjUN6bz0ap9Q6vq6_h6hdFMvlXTTspUvX6Fo5Hi61ZdI8jyQgWMHmMyk_RVssWOKxOfxxlC6tSF5YHMUt66c0fUlQSNMv4Uyitlu13Kx2-Tkfw2vlNiW304B6UROjF_vkLpFNzLemer2_xyrQ_PQVo9v-rMMBcmRMACnb9dQ2DlUfrhW9uPMHrS74GCHqTimscguWAOy0mTOsp2Zy1bM_ZVhfLQTJSVj3UhhYr7w9oilrGz6URknboSHcnU',
+        'Authorization': `Bearer ${props.OrderReducer.token}`,
       },
       body: formdata
     }).then(res => console.log(res.status)
@@ -113,7 +115,9 @@ export default function Example(props) {
 
     return (
       <View style={{ flex: 1 }}>
+
         {message.user._id == '641442' ? <View style={styles.leftTextDesign}>
+          <Image style={{ width: 30, height: 30, borderRadius: 50, marginRight: 5, resizeMode: 'contain' }} source={require('../constants/imgs/admin2.png')} />
           <Text style={styles.leftText}>{message.text}</Text>
           {/* {message._id=='1'?<Text style={{flexGrow:1,textAlign:'left'}}>Cool</Text>:<Text style={{flexGrow:1,textAlign:'right'}}>Cool not</Text>} */}
         </View> : <View style={styles.rightTextDesign}><Text style={styles.rightText}>{message.text}</Text></View>}
@@ -123,6 +127,7 @@ export default function Example(props) {
   }
   return (
     <View style={{ flex: 1 }}>
+         
       <View style={styles.topContainer}>
         <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ marginLeft: -10, marginRight: 5 }}><Image source={require('../constants/imgs/left-arrow.png')} style={{ width: 20, height: 20 }} /></TouchableOpacity>
         <View>
@@ -152,11 +157,11 @@ export default function Example(props) {
 
       <View style={{ flexGrow: 1 }}>
         <GiftedChat
-
-
-
-
           messages={messages}
+          alwaysShowSend
+          showUserAvatar
+          isAnimated
+          showAvatarForEveryMessage
           onSend={messages => onSend(messages)}
           renderMessage={(message) => renderMessages(message.currentMessage)}
 
@@ -175,7 +180,6 @@ const styles = StyleSheet.create({
     height: 80,
     alignItems: 'center',
     paddingLeft: 20,
-    paddingTop: 9,
     flexDirection: 'row',
     backgroundColor: 'white',
     shadowColor: "#000",
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
 
   },
   leftText: {
-    height: 50,
+    height: 45,
     maxWidth: '100%',
     minWidth: 50,
     backgroundColor: 'orange',
@@ -211,11 +215,13 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     paddingTop: 10,
-    marginTop: 2
+    marginTop: 2,
+    marginBottom: 10
+
 
   },
   rightText: {
-    height: 50,
+    height: 45,
     maxWidth: '100%',
     minWidth: 50,
     backgroundColor: 'green',
@@ -228,6 +234,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     paddingLeft: 10,
     paddingRight: 10,
+    marginBottom: 10
+
 
   },
   rightTextDesign: {
@@ -242,3 +250,10 @@ const styles = StyleSheet.create({
   }
 
 })
+const mapStateToProps = (state) => {
+
+  return {
+    OrderReducer: state.orderReducer
+  }
+}
+export default connect(mapStateToProps, null)(ChatView)

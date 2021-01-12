@@ -1,19 +1,39 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import Header from '../sub_components/Header';
-import {connect} from 'react-redux';
-import {userOrderData} from '../Redux/order';
+import { connect } from 'react-redux';
+import { userOrderData, saveToken } from '../Redux/order';
 
-function Home({ navigation,userOrderData }) {
-    React.useEffect(()=>{
+
+function Home({ navigation, userOrderData, saveToken, OrderReducer }) {
+    React.useEffect(() => {
         userOrderData();
-      
-    
-    },[])
+        tokenAccess();
+
+
+    }, [])
+    const tokenAccess = async () => {
+        let token = await AsyncStorage.getItem('token');
+        token = token.replace(/"/g, "")
+        await saveToken(token)
+
+
+    }
     return (
         <View style={styles.container}>
             <StatusBar hidden={false} />
+            {OrderReducer.loading_order_status ? (<View style={styles.customLoding} >
+                <View style={styles.customLodingContainer}>
+                    <ActivityIndicator
+                        visible={true}
+                        color="black"
+                        size="small"
+                    />
+
+                </View>
+            </View>) : null}
             <Header navigation={navigation} title="Home" />
 
             <View style={styles.subContainer}>
@@ -60,6 +80,7 @@ function Home({ navigation,userOrderData }) {
                     </View></TouchableOpacity>
 
             </View>
+
         </View>
     )
 }
@@ -136,8 +157,42 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
 
+    },
+    customLoding: {
+        height: 15,
+        width: 15,
+        borderRadius: 50,
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: -15,
+        marginTop: 5
+    },
+    customLodingContainer: {
+        width: 35,
+        height: 35,
+        borderRadius: 50,
+        justifyContent: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+
+        elevation: 5,
+        backgroundColor: 'white'
+
+
     }
 
 })
-const mapDispatchToProps={userOrderData}
-export default connect (null,mapDispatchToProps)(Home)
+const mapStateToProps = (state) => {
+    console.log(state.orderReducer)
+    return {
+        OrderReducer: state.orderReducer
+    }
+
+}
+const mapDispatchToProps = { userOrderData, saveToken }
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

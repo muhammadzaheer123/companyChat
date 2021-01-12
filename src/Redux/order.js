@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 export const initialState={
     orders:[],
+    token:'',
+    loading_order_status:false,
   
 
 }
@@ -10,25 +12,38 @@ export const initialState={
 const order =createSlice({
     name:"order",
     initialState,
+  
     reducers:{
-        userOrder:(state,{payload})=>{
+        userOrderInit:(state)=>{
+            state.loading_order_status=true
+
+        },
+        userOrderSuccess:(state,{payload})=>{
             console.log('....',payload)
             state.orders=payload
+            state.loading_order_status=false
 
 
         },
+        userOrderFail:(state)=>{
+            state.loading_order_status=false
+        },
+        saveTok:(state,{payload})=>{
+            state.token=payload
+        }
         
     }
 
 })
 
 
-export const {userOrder}=order.actions;
+export const {userOrderInit,userOrderSuccess,userOrderFail,saveTok}=order.actions;
 export default order.reducer;
  export const userOrderData=()=>{
   
     
      return async dispatch=>{
+         dispatch(userOrderInit())
         let token=await AsyncStorage.getItem('token');
         token = await token.replace(/"/g,"")
          fetch('https://dtmoderntech.com/api/orders',{
@@ -39,9 +54,15 @@ export default order.reducer;
                 'Authorization':`Bearer ${token}`
             
               },
-         }).then(res=>res.json()).then(orderData=>dispatch(userOrder(orderData))).catch(e=>Toast.show('Something went wrong',Toast.SHORT))
+         }).then(res=>res.json()).then(orderData=>dispatch(userOrderSuccess(orderData))).catch(e=>{dispatch(userOrderFail());Toast.show('Something went wrong',Toast.SHORT)})
      }
     
 
+
+}
+export const saveToken=(token)=>{
+    return async dispatch=>{
+    dispatch(saveTok(token));
+    }
 
 }

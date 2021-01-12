@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image,Pressable } from 'react-native';
 
 export default function Register({ navigation }) {
   return (
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     height: 300,
     width: 300,
     overflow: 'hidden',
+  
 
 
   },

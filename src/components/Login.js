@@ -50,7 +50,7 @@ class LoginScreen extends React.Component {
         return (
             <View style={styles.container}>
                 <Header navigation={this.props.navigation} color={1} />
-                <View style={{ position: 'absolute', justifyContent: 'flex-start', alignItems: 'center', borderColor: 'white', width: '100%', top: 0 }}>
+                <View style={{ position: 'absolute', justifyContent: 'flex-start', alignItems: 'center', borderColor: 'white', width: '100%', top: 80 }}>
                     <Image source={require('../constants/imgs/dt_logo.png')} style={styles.logo} resizeMode="contain" /></View>
 
                 <View style={styles.subContainer}>
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     logo: {
         height: 300,
         width: 300,
+        bottom:80
     },
 
     textInput: {

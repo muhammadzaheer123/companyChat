@@ -2,8 +2,14 @@ import React,{useState,useEffect} from 'react';
 import { View, Text, StyleSheet, Image,Animated,Dimensions,FlatList,TouchableOpacity } from 'react-native';
 import Header from '../sub_components/Header';
 import {connect} from 'react-redux';
-
+import ActiveImage from '../constants/imgs/megaphone.png';
+import PendingImage from '../constants/imgs/wall-clock.png';
+import CompletedImage from '../constants/imgs/fund.png';
+import DeletedImage from '../constants/imgs/delete.png';
+const{width,height}=Dimensions.get('window');
 function OrderDetails({navigation,OrderReducer,userOrderData}) {
+  
+    console.log(width)
     const[tab1,setTab1]=useState(true);
     const[tab2,setTab2]=useState(false);
     const[tab3,setTab3]=useState(false);
@@ -19,7 +25,7 @@ function OrderDetails({navigation,OrderReducer,userOrderData}) {
     
         return (
             <TouchableOpacity onPress={()=>navigation.navigate('Order',{id:item.id,status:item.order_status,package:item.pakage,amount:item.amount})} style={styles.orderTile}>
-            <Image source={require('../constants/imgs/men.jpg')} style={styles.image} />
+            <Image source={orderStatus==OrderReducer.active_orders? ActiveImage:PendingImage} style={styles.image} />
 
             <View style={styles.textContainer}><Text style={styles.textInsideContainer} >{item.pakage}</Text>
                 <Text style={styles.lightTextinsideConatiner}>{item.id}</Text>
@@ -51,7 +57,7 @@ function OrderDetails({navigation,OrderReducer,userOrderData}) {
                         <Text style={styles.tabsText}>Active</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>{Animated.spring(translateValue, {
-                            toValue: 50,
+                            toValue:width<=360?42:45,
                             velocity:10,
                             useNativeDriver: true,
                           }).start();setTab1(false);setTab2(true);setTab3(false);setTab4(false);setOrderStatus(OrderReducer.completed_orders)}}>
@@ -59,7 +65,7 @@ function OrderDetails({navigation,OrderReducer,userOrderData}) {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>{
                         Animated.spring(translateValue, {
-                            toValue: 75,
+                            toValue:width<=360?60:71,
                             velocity:10,
                             useNativeDriver: true,
                           }).start();setTab1(false);setTab2(false);setTab3(true);setTab4(false);setOrderStatus(OrderReducer.deliver_orders)}}>
@@ -177,13 +183,14 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         marginTop: 10,
+      
 
 
 
 
     },
     orderTile: {
-        width: 330,
+        width:width<=360? 330:360,
         padding: 10,
         flexDirection: 'row',
         backgroundColor: 'white',
@@ -197,11 +204,11 @@ const styles = StyleSheet.create({
 
         elevation: 1,
         borderRadius: 10,
-        marginTop:10
+        marginTop:10,
     },
     image: {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         borderRadius: 50
     },
     textContainer: {
